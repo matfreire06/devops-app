@@ -1,4 +1,11 @@
 name: $(Date:yyyyMMdd)$(Rev:.r)
+trigger:
+  branches:
+    include:
+      - main
+  paths:
+    include:
+      - frontend/*
 variables: 
 - group: 'var-front' # variable group
 stages:
