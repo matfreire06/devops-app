@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: front
-        image: registry.digitalocean.com/reto-devops/front:14
+        image: registry.digitalocean.com/reto-devops/front:17
         resources:
           limits:
             memory: "128Mi"
