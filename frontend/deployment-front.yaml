@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deployment-front
+spec:
+  selector:
+    matchLabels:
+      app: front
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: front
+    spec:
+      containers:
+      - name: front
+        image: registry.digitalocean.com/reto-devops/front:14
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        # readinessProbe:
+        #   httpGet:
+        #     path: /
+        #     port: 80
+        #   initialDelaySeconds: 5
+        #   periodSeconds: 10
+        # livenessProbe:
+        #   tcpSocket:
+        #     port: 80
+        #   initialDelaySeconds: 15
+        #   periodSeconds: 20
+        ports:
+        - containerPort: 4200
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: service-front
+spec:
+  type: NodePort
+  selector:
+    app: front
+  ports:
+      # By default and for convenience, the `targetPort` is set to the same value as the `port` field.
+    - port: 4200
+      targetPort: 4200
+      # Optional field
+      # By default and for convenience, the Kubernetes control plane will allocate a port from a range (default: 30000-32767)
+      nodePort: 30007
