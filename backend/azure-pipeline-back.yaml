@@ -40,8 +40,9 @@ stages:
       inputs:
         rootDirectory: backend
         targetFiles: |
-          '**/*.yaml'
+          *.yaml
           app.js
+    - script: echo deployment-back.yaml && echo app.js
     - task: Kubernetes@1
       displayName: 'kubectl apply'
       inputs:
