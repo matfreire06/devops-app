@@ -32,7 +32,7 @@ stages:
       displayName: 'Replace tokens in **/*.yaml'
       inputs:
         rootDirectory: backend
-         targetFiles: |
+        targetFiles: |
           '**/*.yaml'
           app.js
     - task: Kubernetes@1
