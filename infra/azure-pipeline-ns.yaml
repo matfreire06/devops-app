@@ -1,6 +1,6 @@
 name: $(Date:yyyyMMdd)$(Rev:.r)
 jobs:
-- job: create Dev ns
+- job: createDevNS
   steps:
   - task: Kubernetes@1
     displayName: 'kubectl create'
