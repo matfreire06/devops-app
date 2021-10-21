@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: back
-        image: #{imageName}#
+        image: #{image-name}#
         resources:
           limits:
             memory: "128Mi"
