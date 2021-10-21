@@ -31,10 +31,8 @@ stages:
     - task: qetza.replacetokens.replacetokens-task.replacetokens@4
       displayName: 'Replace tokens in **/*.yaml'
       inputs:
-        rootDirectory: frontend
-         targetFiles: |
-          **/*.yaml
-          app.js
+        rootDirectory: backend
+         targetFiles: '**/*.yaml', app.js
     - task: Kubernetes@1
       displayName: 'kubectl apply'
       inputs:
