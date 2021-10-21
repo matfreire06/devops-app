@@ -1,6 +1,6 @@
 name: $(Date:yyyyMMdd)$(Rev:.r)
-variables:
-  var1: value1
+variables: 
+- group: 'var-front' # variable group
 stages:
 - stage: Build
   jobs:
@@ -28,6 +28,11 @@ stages:
     pool:
       name: Default
     steps:
+    - task: qetza.replacetokens.replacetokens-task.replacetokens@4
+      displayName: 'Replace tokens in **/*.yaml'
+      inputs:
+        rootDirectory: frontend
+        targetFiles: '**/*.yaml'
     - task: Kubernetes@1
       displayName: 'kubectl apply'
       inputs:

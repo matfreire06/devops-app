@@ -6,7 +6,7 @@ spec:
   selector:
     matchLabels:
       app: back
-  replicas: 2
+  replicas: #{replicas}#
   template:
     metadata:
       labels:
@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: back
-        image: registry.digitalocean.com/reto-devops/back:14
+        image: #{imageName}#
         resources:
           limits:
             memory: "128Mi"

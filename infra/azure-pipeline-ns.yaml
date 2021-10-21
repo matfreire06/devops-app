@@ -1,6 +1,8 @@
 name: $(Date:yyyyMMdd)$(Rev:.r)
 jobs:
 - job: createDevNS
+  pool:
+    name: Default
   steps:
   - task: Kubernetes@1
     displayName: 'kubectl create'
