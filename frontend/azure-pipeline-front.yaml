@@ -32,5 +32,4 @@ stages:
         kubernetesServiceEndpoint: 'DigitalOcean-k8s'
         command: apply
         arguments: '-f $(System.DefaultWorkingDirectory)/frontend/deployment-front.yaml'
-        - script: echo Deploy!
 
