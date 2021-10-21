@@ -1,0 +1,9 @@
+node_modules
+e2e
+Dockerfile
+.dockerignore
+.git
+.gitignore
+README.md
+LICENSE
+.vscode

@@ -1,9 +1,7 @@
-FROM alpine:3.13.6
+FROM node:lts-alpine3.13
 WORKDIR /home/node/app
-COPY package.json .
-COPY package-lock.json .
-COPY .npmrc .
-RUN npm install
 COPY . .
-EXPOSE 4200
+RUN npm install
+RUN npm install nodemon -g
+EXPOSE 3000
 CMD ["nodemon", "app.js"]
