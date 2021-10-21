@@ -32,7 +32,9 @@ stages:
       displayName: 'Replace tokens in **/*.yaml'
       inputs:
         rootDirectory: backend
-         targetFiles: '**/*.yaml', app.js
+         targetFiles: |
+         '**/*.yaml'
+         app.js
     - task: Kubernetes@1
       displayName: 'kubectl apply'
       inputs:
