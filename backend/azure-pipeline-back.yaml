@@ -42,7 +42,6 @@ stages:
         targetFiles: |
           *.yaml
           app.js
-    - script: cat deployment-back.yaml && cat app.js
     - task: Kubernetes@1
       displayName: 'kubectl apply'
       inputs:
