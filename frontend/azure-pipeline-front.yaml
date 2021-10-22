@@ -16,6 +16,11 @@ stages:
     pool:
       name: Default
     steps:
+    - task: qetza.replacetokens.replacetokens-task.replacetokens@4
+      displayName: 'Replace tokens in **/*.yaml'
+      inputs:
+        rootDirectory: frontend
+        targetFiles: frontend/src/app/user.service.ts
     - task: Docker@1
       displayName: build
       inputs:
