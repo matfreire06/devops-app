@@ -15,20 +15,20 @@ stages:
     pool:
       name: Default
     steps:
-    # - task: Docker@1
-    #   displayName: build
-    #   inputs:
-    #     command: build
-    #     dockerFile: frontend/Dockerfile
-    #     imageName: 'registry.digitalocean.com/reto-devops/front:$(Build.BuildId)'
+    - task: Docker@1
+      displayName: build
+      inputs:
+        command: build
+        dockerFile: frontend/Dockerfile
+        imageName: 'registry.digitalocean.com/reto-devops/front:$(Build.BuildId)'
     - script: echo Builded!
-    # - task: Docker@1
-    #   displayName: push
-    #   inputs:
-    #     containerregistrytype: 'Container Registry'
-    #     dockerRegistryEndpoint: 'DigitalOcean-DockerRegistry'
-    #     command: push
-    #     imageName: 'registry.digitalocean.com/reto-devops/front:$(Build.BuildId)'
+    - task: Docker@1
+      displayName: push
+      inputs:
+        containerregistrytype: 'Container Registry'
+        dockerRegistryEndpoint: 'DigitalOcean-DockerRegistry'
+        command: push
+        imageName: 'registry.digitalocean.com/reto-devops/front:$(Build.BuildId)'
 - stage: Deploy_DEV
   jobs:
   - job: DeployJob
