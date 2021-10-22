@@ -3,6 +3,7 @@ trigger:
   branches:
     include:
       - main
+      - feature/*
   paths:
     include:
       - frontend/*
@@ -46,4 +47,22 @@ stages:
         kubernetesServiceEndpoint: 'DigitalOcean-k8s'
         command: apply
         arguments: '-f $(System.DefaultWorkingDirectory)/frontend/deployment-front.yaml -n dev'
+- stage: Deploy_PDN
+  condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/trunk'))
+  jobs:
+  - job: DeployJob
+    pool:
+      name: Default
+    steps:
+    - task: qetza.replacetokens.replacetokens-task.replacetokens@4
+      displayName: 'Replace tokens in **/*.yaml'
+      inputs:
+        rootDirectory: frontend
+        targetFiles: '**/*.yaml'
+    - task: Kubernetes@1
+      displayName: 'kubectl apply'
+      inputs:
+        kubernetesServiceEndpoint: 'DigitalOcean-k8s'
+        command: apply
+        arguments: '-f $(System.DefaultWorkingDirectory)/frontend/deployment-front.yaml -n pdn'
 
