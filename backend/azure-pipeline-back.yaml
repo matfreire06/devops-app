@@ -29,7 +29,7 @@ stages:
         dockerRegistryEndpoint: 'DigitalOcean-DockerRegistry'
         command: push
         imageName: 'registry.digitalocean.com/reto-devops/back:$(Build.BuildId)'
-- stage: Deploy
+- stage: Deploy DEV
   jobs:
   - job: DeployJob
     pool:
@@ -47,5 +47,5 @@ stages:
       inputs:
         kubernetesServiceEndpoint: 'DigitalOcean-k8s'
         command: apply
-        arguments: '-f $(System.DefaultWorkingDirectory)/backend/deployment-back.yaml'
+        arguments: '-f $(System.DefaultWorkingDirectory)/backend/deployment-back.yaml -n dev'
 
