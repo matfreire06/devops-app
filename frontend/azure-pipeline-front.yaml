@@ -29,7 +29,7 @@ stages:
     #     dockerRegistryEndpoint: 'DigitalOcean-DockerRegistry'
     #     command: push
     #     imageName: 'registry.digitalocean.com/reto-devops/front:$(Build.BuildId)'
-- stage: Deploy DEV
+- stage: Deploy_DEV
   jobs:
   - job: DeployJob
     pool:
