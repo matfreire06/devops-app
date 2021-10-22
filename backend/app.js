@@ -4,7 +4,7 @@ bodyParser = require('body-parser'),
 cors = require('cors'),
 mongoose = require('mongoose');
 mongoose.Promise = global.Promise;
-const connectionString = 'mongodb+srv://#{user}#:#{password}#@#{database}#?retryWrites=true&w=majority';
+const connectionString = '#{string}#';
 mongoose.connect(connectionString, { useNewUrlParser: true }).then(
   () => {console.log('Database is connected') },
   err => { console.log('Can not connect to the database'+ err)});
