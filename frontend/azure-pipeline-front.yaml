@@ -29,7 +29,7 @@ stages:
         cliSources: frontend
         extraProperties: |
           sonar.branch.name= $(Build.SourceBranchName)
-          sonar.exclusions= node_modules/**, e2e/**
+          sonar.exclusions= node_modules/**, e2e/**, performanceTest/**, aceptanceTest/**, Dockerfile, .gitignore, .dockerignore
           sonar.sources= $(System.DefaultWorkingDirectory)/frontend/src/app
           sonar.sourceEncoding= UTF-8
           sonar.language= ts
@@ -71,6 +71,20 @@ stages:
         kubernetesServiceEndpoint: 'DigitalOcean-k8s'
         command: apply
         arguments: '-f $(System.DefaultWorkingDirectory)/frontend/deployment-front.yaml -n dev'
+- stage: Tests
+  jobs:
+  - job: AcceptanceTest
+    pool:
+      name: Default
+    steps:
+    - script: vrest-ng-cli run --projectdir=$(System.DefaultWorkingDirectory)/frontend/acceptanceTest --logger=xunit
+      displayName: 'AcceptanceTest_vRestNG'
+  - job: PerformanceTest
+    pool:
+      name: Default
+    steps:
+    - script: echo Performance
+      displayName: 'PerformanceTest_Vegeta'
 - stage: Deploy_PDN
   condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/trunk'))
   jobs:
