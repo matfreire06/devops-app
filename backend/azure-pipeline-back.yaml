@@ -84,6 +84,17 @@ stages:
     pool:
       name: Default
     steps:
+    - task: qetza.replacetokens.replacetokens-task.replacetokens@4
+      displayName: 'Replace tokens in $(System.DefaultWorkingDirectory)/backend/performanceTest/target.txt'
+      inputs:
+        targetFiles: '$(System.DefaultWorkingDirectory)/backend/performanceTest/target.txt'
+    - script: |
+        /devops/vegeta/vegeta attack -targets=$(System.DefaultWorkingDirectory)/backend/performanceTest/target.txt -insecure -rate=5 -duration=30s -output=results.bin
+   
+        /devops/vegeta/vegeta report -type=json results.bin > metrics.json
+   
+        cat metrics.json
+  displayName: 'Command Line Script copy'
     - script: echo Performance
       displayName: 'PerformanceTest_Vegeta'   
 - stage: Deploy_PDN
