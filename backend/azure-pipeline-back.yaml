@@ -93,7 +93,7 @@ stages:
    
         /devops/vegeta/vegeta report -type=json results.bin > metrics.json
    
-        cat metrics.json
+        node $(System.DefaultWorkingDirectory)/backend/performanceTest/validate_results.js $(percentage-success-req)
       displayName: 'PerformanceTest_Vegeta'
 - stage: Deploy_PDN
   condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/trunk'))

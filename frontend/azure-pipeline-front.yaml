@@ -83,7 +83,16 @@ stages:
     pool:
       name: Default
     steps:
-    - script: echo Performance
+    - task: qetza.replacetokens.replacetokens-task.replacetokens@4
+      displayName: 'Replace tokens in $(System.DefaultWorkingDirectory)/backend/performanceTest/target.txt'
+      inputs:
+        targetFiles: '$(System.DefaultWorkingDirectory)/backend/performanceTest/**'
+    - script: |
+        /devops/vegeta/vegeta attack -targets=$(System.DefaultWorkingDirectory)/backend/performanceTest/target.txt -insecure -rate=5 -duration=30s -output=results.bin
+   
+        /devops/vegeta/vegeta report -type=json results.bin > metrics.json
+   
+        node $(System.DefaultWorkingDirectory)/backend/performanceTest/validate_results.js $(percentage-success-req)
       displayName: 'PerformanceTest_Vegeta'
 - stage: Deploy_PDN
   condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/trunk'))
