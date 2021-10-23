@@ -1,0 +1,34 @@
+{
+  "validation": {
+    "assertions": [
+      {
+        "source": "statusCode",
+        "property": null,
+        "operator": "equalToNumber",
+        "expectedValue": "200"
+      },
+      {
+        "source": "textBody",
+        "property": "",
+        "operator": "contains",
+        "expectedValue": "name"
+      },
+      {
+        "source": "textBody",
+        "property": null,
+        "operator": "contains",
+        "expectedValue": "email"
+      },
+      {
+        "source": "textBody",
+        "property": null,
+        "operator": "contains",
+        "expectedValue": "phone_number"
+      }
+    ]
+  },
+  "request": {
+    "url": "http://157.230.66.49:3000/user",
+    "method": "GET"
+  }
+}
