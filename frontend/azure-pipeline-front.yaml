@@ -77,7 +77,7 @@ stages:
     pool:
       name: Default
     steps:
-    - script: vrest-ng-cli run --projectdir=$(System.DefaultWorkingDirectory)/frontend/acceptanceTest --logger=xunit
+    - script: vrest-ng-cli run --projectdir=$(System.DefaultWorkingDirectory)/frontend/aceptanceTest  --logger=xunit
       displayName: 'AcceptanceTest_vRestNG'
   - job: PerformanceTest
     pool:
