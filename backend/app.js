@@ -5,6 +5,7 @@ cors = require('cors'),
 mongoose = require('mongoose');
 mongoose.Promise = global.Promise;
 const connectionString = '#{string}#';
+
 mongoose.connect(connectionString, { useNewUrlParser: true }).then(
   () => {console.log('Database is connected') },
   err => { console.log('Can not connect to the database'+ err)});

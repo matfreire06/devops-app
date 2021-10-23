@@ -15,7 +15,27 @@ stages:
   - job: BuildJob
     pool:
       name: Default
+      demands: java
     steps:
+    - task: SonarSource.sonarcloud.14d9cde6-c1da-4d55-aa01-2965cd301255.SonarCloudPrepare@1
+      displayName: 'Prepare analysis on SonarCloud'
+      inputs:
+        SonarCloud: SonarCloud
+        organization: miguewn06
+        scannerMode: CLI
+        configMode: manual
+        cliProjectKey: 'miguewn06_MyProject_back'
+        cliProjectName: miguewn06_MyProject_back
+        cliSources: backend
+        extraProperties: |
+          sonar.branch.name= $(Build.SourceBranchName)
+          sonar.exclusions= node_modules/**
+          sonar.sources= .
+          sonar.sourceEncoding= UTF-8
+          sonar.language= js
+          sonar.javascript.file.suffixes=.js
+    - task: SonarSource.sonarcloud.ce096e50-6155-4de8-8800-4221aaeed4a1.SonarCloudAnalyze@1
+      displayName: 'Run Code Analysis'
     - task: qetza.replacetokens.replacetokens-task.replacetokens@4
       displayName: 'Replace tokens in app.js'
       inputs:
