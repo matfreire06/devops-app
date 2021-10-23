@@ -1,8 +1,6 @@
-'use strict';
-
 const fs = require('fs');
 const minValue = process.argv.slice(2);
-const path = '#{chaos-path}#/metrics.json';
+const path = '$(System.DefaultWorkingDirectory)/metrics.json';
 if (!fs.existsSync(path)) {
     console.log('the file does not exist');
     return process.exit(0);
