@@ -87,7 +87,7 @@ stages:
     - task: qetza.replacetokens.replacetokens-task.replacetokens@4
       displayName: 'Replace tokens in $(System.DefaultWorkingDirectory)/backend/performanceTest/target.txt'
       inputs:
-        targetFiles: '$(System.DefaultWorkingDirectory)/backend/performanceTest/target.txt'
+        targetFiles: '$(System.DefaultWorkingDirectory)/backend/performanceTest/**'
     - script: |
         /devops/vegeta/vegeta attack -targets=$(System.DefaultWorkingDirectory)/backend/performanceTest/target.txt -insecure -rate=5 -duration=30s -output=results.bin
    

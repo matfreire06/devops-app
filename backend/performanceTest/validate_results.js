@@ -1,6 +1,6 @@
 const fs = require('fs');
 const minValue = process.argv.slice(2);
-const path = '$(System.DefaultWorkingDirectory)/metrics.json';
+const path = '#{result-performance-json}#';
 if (!fs.existsSync(path)) {
     console.log('the file does not exist');
     return process.exit(0);
