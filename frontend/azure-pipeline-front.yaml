@@ -24,8 +24,8 @@ stages:
         organization: miguewn06
         scannerMode: CLI
         configMode: manual
-        cliProjectKey: 'front'
-        cliProjectName: front
+        cliProjectKey: 'miguewn06_MyProject_front'
+        cliProjectName: miguewn06_MyProject_front
         cliSources: frontend
         extraProperties: |
           sonar.branch.name= $(Build.SourceBranchName)
