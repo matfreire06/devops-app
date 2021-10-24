@@ -19,6 +19,7 @@ stages:
         kubernetesServiceEndpoint: 'DigitalOcean-k8s'
         command: create
         arguments: '-f $(System.DefaultWorkingDirectory)/infra/namespace-dev.yaml'
+      continueOnError: true
 - stage: PDN
   jobs:
   - job: createPdnNS

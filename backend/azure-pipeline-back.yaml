@@ -28,7 +28,6 @@ stages:
         cliProjectName: miguewn06_MyProject_back
         cliSources: backend
         extraProperties: |
-          sonar.branch.name= $(Build.SourceBranchName)
           sonar.exclusions= node_modules/**, acceptanceTest/**, performanceTest/**, .dockerfile, .gitignore, Dockerfile
           sonar.sources= .
           sonar.sourceEncoding= UTF-8
