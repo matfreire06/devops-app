@@ -41,6 +41,7 @@ stages:
         rootDirectory: frontend
         targetFiles: src/app/user.service.ts
     - task: Docker@1
+      condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/main'))
       displayName: build
       inputs:
         command: build
@@ -48,6 +49,7 @@ stages:
         imageName: 'registry.digitalocean.com/reto-devops/front:$(Build.BuildId)'
     - script: echo Builded!
     - task: Docker@1
+      condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/main'))
       displayName: push
       inputs:
         containerregistrytype: 'Container Registry'
