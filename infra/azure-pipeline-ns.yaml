@@ -21,6 +21,7 @@ stages:
         arguments: '-f $(System.DefaultWorkingDirectory)/infra/namespace-dev.yaml'
       continueOnError: true
 - stage: PDN
+  condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/trunk'))
   jobs:
   - job: createPdnNS
     pool:
