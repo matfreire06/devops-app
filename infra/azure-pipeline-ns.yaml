@@ -1,10 +1,36 @@
 name: $(Date:yyyyMMdd)$(Rev:.r)
-jobs:
-- job: create Dev ns
-  steps:
-- task: Kubernetes@1
-  displayName: 'kubectl create'
-  inputs:
-    kubernetesServiceEndpoint: 'DigitalOcean-k8s'
-    command: create
-    arguments: '-f $(System.DefaultWorkingDirectory)/infra/namespace-dev.yaml'
+trigger:
+  branches:
+    include:
+      - main
+  paths:
+    include:
+      - infra/*
+stages:
+- stage: DEV
+  jobs:
+  - job: createDevNS
+    pool:
+      name: Default
+    steps:
+    - task: Kubernetes@1
+      displayName: 'kubectl create'
+      inputs:
+        kubernetesServiceEndpoint: 'DigitalOcean-k8s'
+        command: create
+        arguments: '-f $(System.DefaultWorkingDirectory)/infra/namespace-dev.yaml'
+      continueOnError: true
+- stage: PDN
+  condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/trunk'))
+  jobs:
+  - job: createPdnNS
+    pool:
+      name: Default
+    steps:
+    - task: Kubernetes@1
+      displayName: 'kubectl create'
+      inputs:
+        kubernetesServiceEndpoint: 'DigitalOcean-k8s'
+        command: create
+        arguments: '-f $(System.DefaultWorkingDirectory)/infra/namespace-pdn.yaml'
+        

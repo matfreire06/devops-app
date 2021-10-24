@@ -1,0 +1,2 @@
+GET #{front-url}#
+Content-Type: application/json

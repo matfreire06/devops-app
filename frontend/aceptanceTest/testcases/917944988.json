@@ -1,0 +1,16 @@
+{
+  "validation": {
+    "assertions": [
+      {
+        "source": "statusCode",
+        "property": null,
+        "operator": "equalToNumber",
+        "expectedValue": "200"
+      }
+    ]
+  },
+  "request": {
+    "url": "http://143.244.203.50:4200",
+    "method": "GET"
+  }
+}

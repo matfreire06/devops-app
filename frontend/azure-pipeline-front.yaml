@@ -1,0 +1,115 @@
+name: $(Date:yyyyMMdd)$(Rev:.r)
+trigger:
+  branches:
+    include:
+      - main
+      - feature/*
+  paths:
+    include:
+      - frontend/*
+variables: 
+- group: 'var-front' # variable group
+stages:
+- stage: Build
+  jobs:
+  - job: BuildJob
+    pool:
+      name: Default
+      demands: java
+    steps:
+    - task: SonarSource.sonarcloud.14d9cde6-c1da-4d55-aa01-2965cd301255.SonarCloudPrepare@1
+      displayName: 'Prepare analysis on SonarCloud'
+      inputs:
+        SonarCloud: SonarCloud
+        organization: miguewn06
+        scannerMode: CLI
+        configMode: manual
+        cliProjectKey: 'miguewn06_MyProject_front'
+        cliProjectName: miguewn06_MyProject_front
+        cliSources: frontend
+        extraProperties: |
+          sonar.exclusions= node_modules/**, e2e/**, performanceTest/**, aceptanceTest/**, Dockerfile, .gitignore, .dockerignore
+          sonar.sources= $(System.DefaultWorkingDirectory)/frontend/src/app
+          sonar.sourceEncoding= UTF-8
+          sonar.language= ts
+    - task: SonarSource.sonarcloud.ce096e50-6155-4de8-8800-4221aaeed4a1.SonarCloudAnalyze@1
+      displayName: 'Run Code Analysis'
+      continueOnError: true
+    - task: qetza.replacetokens.replacetokens-task.replacetokens@4
+      displayName: 'Replace tokens in **/*.yaml'
+      inputs:
+        rootDirectory: frontend
+        targetFiles: src/app/user.service.ts
+    - task: Docker@1
+      displayName: build
+      inputs:
+        command: build
+        dockerFile: frontend/Dockerfile
+        imageName: 'registry.digitalocean.com/reto-devops/front:$(Build.BuildId)'
+    - script: echo Builded!
+    - task: Docker@1
+      displayName: push
+      inputs:
+        containerregistrytype: 'Container Registry'
+        dockerRegistryEndpoint: 'DigitalOcean-DockerRegistry'
+        command: push
+        imageName: 'registry.digitalocean.com/reto-devops/front:$(Build.BuildId)'
+- stage: Deploy_DEV
+  jobs:
+  - job: DeployJob
+    pool:
+      name: Default
+    steps:
+    - task: qetza.replacetokens.replacetokens-task.replacetokens@4
+      displayName: 'Replace tokens in **/*.yaml'
+      inputs:
+        rootDirectory: frontend
+        targetFiles: '**/*.yaml'
+    - task: Kubernetes@1
+      displayName: 'kubectl apply'
+      inputs:
+        kubernetesServiceEndpoint: 'DigitalOcean-k8s'
+        command: apply
+        arguments: '-f $(System.DefaultWorkingDirectory)/frontend/deployment-front.yaml -n dev'
+- stage: Tests
+  jobs:
+  - job: AcceptanceTest
+    pool:
+      name: Default
+    steps:
+    - script: vrest-ng-cli run --projectdir=$(System.DefaultWorkingDirectory)/frontend/aceptanceTest  --logger=xunit
+      displayName: 'AcceptanceTest_vRestNG'
+  - job: PerformanceTest
+    pool:
+      name: Default
+    steps:
+    - task: qetza.replacetokens.replacetokens-task.replacetokens@4
+      displayName: 'Replace tokens in $(System.DefaultWorkingDirectory)/backend/performanceTest/target.txt'
+      inputs:
+        targetFiles: '$(System.DefaultWorkingDirectory)/backend/performanceTest/**'
+    - script: |
+        /devops/vegeta/vegeta attack -targets=$(System.DefaultWorkingDirectory)/backend/performanceTest/target.txt -insecure -rate=5 -duration=30s -output=results.bin
+   
+        /devops/vegeta/vegeta report -type=json results.bin > metrics.json
+   
+        node $(System.DefaultWorkingDirectory)/backend/performanceTest/validate_results.js $(percentage-success-req)
+      displayName: 'PerformanceTest_Vegeta'
+- stage: Deploy_PDN
+  condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/trunk'))
+  jobs:
+  - job: DeployJob
+    pool:
+      name: Default
+    steps:
+    - task: qetza.replacetokens.replacetokens-task.replacetokens@4
+      displayName: 'Replace tokens in **/*.yaml'
+      inputs:
+        rootDirectory: frontend
+        targetFiles: '**/*.yaml'
+    - task: Kubernetes@1
+      displayName: 'kubectl apply'
+      inputs:
+        kubernetesServiceEndpoint: 'DigitalOcean-k8s'
+        command: apply
+        arguments: '-f $(System.DefaultWorkingDirectory)/frontend/deployment-front.yaml -n pdn'
+

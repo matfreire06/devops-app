@@ -1,0 +1,2 @@
+GET #{back-url}#
+Content-Type: application/json
