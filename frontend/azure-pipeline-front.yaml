@@ -41,6 +41,7 @@ stages:
         rootDirectory: frontend
         targetFiles: src/app/user.service.ts
     - task: Docker@1
+      condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/main'))
       displayName: build
       inputs:
         command: build
@@ -48,6 +49,7 @@ stages:
         imageName: 'registry.digitalocean.com/reto-devops/front:$(Build.BuildId)'
     - script: echo Builded!
     - task: Docker@1
+      condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/main'))
       displayName: push
       inputs:
         containerregistrytype: 'Container Registry'
@@ -55,6 +57,7 @@ stages:
         command: push
         imageName: 'registry.digitalocean.com/reto-devops/front:$(Build.BuildId)'
 - stage: Deploy_DEV
+  condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/main'))
   jobs:
   - job: DeployJob
     pool:
@@ -72,6 +75,7 @@ stages:
         command: apply
         arguments: '-f $(System.DefaultWorkingDirectory)/frontend/deployment-front.yaml -n dev'
 - stage: Tests
+  condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/main'))
   jobs:
   - job: AcceptanceTest
     pool:
@@ -95,8 +99,15 @@ stages:
         node $(System.DefaultWorkingDirectory)/backend/performanceTest/validate_results.js $(percentage-success-req)
       displayName: 'PerformanceTest_Vegeta'
 - stage: Deploy_PDN
-  condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/trunk'))
+  condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/main'))
   jobs:
+  - job: Approval
+    pool: server
+    steps:
+    - task: ManualValidation@0
+      displayName: 'Manual Validation'
+      inputs:
+        notifyUsers: 'matfreire06@gmail.com' 
   - job: DeployJob
     pool:
       name: Default

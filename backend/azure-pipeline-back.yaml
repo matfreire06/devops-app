@@ -42,6 +42,7 @@ stages:
         rootDirectory: backend
         targetFiles: app.js
     - task: Docker@1
+      condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/main'))
       displayName: build
       inputs:
         command: build
@@ -49,6 +50,7 @@ stages:
         imageName: 'registry.digitalocean.com/reto-devops/back:$(Build.BuildId)'
     - script: echo Builded!
     - task: Docker@1
+      condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/main'))
       displayName: push
       inputs:
         containerregistrytype: 'Container Registry'
@@ -56,6 +58,7 @@ stages:
         command: push
         imageName: 'registry.digitalocean.com/reto-devops/back:$(Build.BuildId)'
 - stage: Deploy_DEV
+  condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/main'))
   jobs:
   - job: DeployJob
     pool:
@@ -73,6 +76,7 @@ stages:
         command: apply
         arguments: '-f $(System.DefaultWorkingDirectory)/backend/deployment-back.yaml -n dev'
 - stage: Tests
+  condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/main'))
   jobs:
   - job: AcceptanceTest
     pool:
@@ -96,7 +100,7 @@ stages:
         node $(System.DefaultWorkingDirectory)/backend/performanceTest/validate_results.js $(percentage-success-req)
       displayName: 'PerformanceTest_Vegeta'
 - stage: Deploy_PDN
-  condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/trunk'))
+  condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/main'))
   jobs:
   - job: DeployJob
     pool:
