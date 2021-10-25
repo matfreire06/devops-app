@@ -10,7 +10,7 @@
     ]
   },
   "request": {
-    "url": "http://143.244.203.50:4200",
+    "url": "#{front-url}#",
     "method": "GET"
   }
 }

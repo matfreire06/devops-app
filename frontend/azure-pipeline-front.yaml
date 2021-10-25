@@ -81,9 +81,14 @@ stages:
     pool:
       name: Default
     steps:
+    - task: qetza.replacetokens.replacetokens-task.replacetokens@4
+      displayName: 'Replace tokens'
+      inputs:
+        targetFiles: '$(System.DefaultWorkingDirectory)/frontend/aceptanceTest/testcases/**'  
     - script: vrest-ng-cli run --projectdir=$(System.DefaultWorkingDirectory)/frontend/aceptanceTest  --logger=xunit
       displayName: 'AcceptanceTest_vRestNG'
   - job: PerformanceTest
+    dependsOn: AcceptanceTest
     pool:
       name: Default
     steps:
@@ -98,6 +103,23 @@ stages:
    
         node $(System.DefaultWorkingDirectory)/backend/performanceTest/validate_results.js $(percentage-success-req)
       displayName: 'PerformanceTest_Vegeta'
+  - job: SecurityTest
+    dependsOn: PerformanceTest
+    pool:
+      name: Default
+    steps:  
+    - task: owaspzap@1
+      inputs:
+        threshold: '120'
+        scantype: 'targetedScan'
+        url: '$(front-url)'
+        port: '4200'
+  - job: E2E
+    dependsOn: SecurityTest
+    pool:
+      name: Default
+    steps:
+      - script: echo E2E 
 - stage: Deploy_PDN
   condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/main'))
   jobs:
