@@ -122,6 +122,8 @@ stages:
       - script: echo E2E 
 - stage: Deploy_PDN
   condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/main'))
+  variables:
+    - group: front-var-pdn
   jobs:
   - job: Approval
     pool: server
@@ -130,12 +132,34 @@ stages:
       displayName: 'Manual Validation'
       inputs:
         notifyUsers: 'matfreire06@gmail.com' 
+  - job: BuildJob
+    pool:
+      name: Default
+    steps:
+    - task: qetza.replacetokens.replacetokens-task.replacetokens@4
+      displayName: 'Replace tokens'
+      inputs:
+        rootDirectory: frontend
+        targetFiles: src/app/user.service.ts
+    - task: Docker@1
+      displayName: build
+      inputs:
+        command: build
+        dockerFile: frontend/Dockerfile
+        imageName: 'registry.digitalocean.com/reto-devops/front-pdn:$(Build.BuildId)'
+    - task: Docker@1
+      displayName: push
+      inputs:
+        containerregistrytype: 'Container Registry'
+        dockerRegistryEndpoint: 'DigitalOcean-DockerRegistry'
+        command: push
+        imageName: 'registry.digitalocean.com/reto-devops/front-pdn:$(Build.BuildId)'      
   - job: DeployJob
     pool:
       name: Default
     steps:
     - task: qetza.replacetokens.replacetokens-task.replacetokens@4
-      displayName: 'Replace tokens in **/*.yaml'
+      displayName: 'Replace tokens'
       inputs:
         rootDirectory: frontend
         targetFiles: '**/*.yaml'
@@ -145,4 +169,20 @@ stages:
         kubernetesServiceEndpoint: 'DigitalOcean-k8s'
         command: apply
         arguments: '-f $(System.DefaultWorkingDirectory)/frontend/deployment-front.yaml -n pdn'
+- stage: SmokeTest
+  condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/main'))
+  variables:
+    - group: front-var-pdn
+  jobs:
+  - job: BuildJob
+    pool:
+      name: Default
+    steps:
+    - task: oneluckidevWebSmokeTest@1
+      inputs:
+        url: '#{front-url}#'
+        expectedReturnCode: '200'
+        retryAttemptCount: '3'
+        strictSSL: true
+        retryDelay: '1000'
 
