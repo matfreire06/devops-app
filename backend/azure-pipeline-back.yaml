@@ -93,7 +93,7 @@ stages:
       inputs:
         targetFiles: '$(System.DefaultWorkingDirectory)/backend/performanceTest/**'
     - script: |
-        /devops/vegeta/vegeta attack -targets=$(System.DefaultWorkingDirectory)/backend/performanceTest/target.txt -insecure -rate=5 -duration=30s -output=results.bin
+        /devops/vegeta/vegeta attack -targets=$(System.DefaultWorkingDirectory)/backend/performanceTest/target.txt -insecure -rate=5 -duration=30s -timeout 10s -output=results.bin
    
         /devops/vegeta/vegeta report -type=json results.bin > metrics.json
    
