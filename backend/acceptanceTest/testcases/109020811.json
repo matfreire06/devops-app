@@ -28,7 +28,7 @@
     ]
   },
   "request": {
-    "url": "http://157.230.66.49:3000/user",
+    "url": "#{back-url}#",
     "method": "GET"
   }
 }
