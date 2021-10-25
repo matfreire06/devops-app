@@ -98,6 +98,21 @@ stages:
    
         node $(System.DefaultWorkingDirectory)/backend/performanceTest/validate_results.js $(percentage-success-req)
       displayName: 'PerformanceTest_Vegeta'
+  - job: SecurityTest
+    pool:
+      name: Default
+    steps:  
+    - task: owaspzap@1
+      inputs:
+        threshold: '120'
+        scantype: 'targetedScan'
+        url: '$(front-url)'
+        port: '4200'
+  - job: E2E
+    pool:
+      name: Default
+    steps:
+      - script: echo E2E 
 - stage: Deploy_PDN
   condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/main'))
   jobs:
