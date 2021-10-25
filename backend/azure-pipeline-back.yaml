@@ -89,6 +89,7 @@ stages:
     - script: vrest-ng-cli run --projectdir=$(System.DefaultWorkingDirectory)/backend/acceptanceTest --logger=xunit
       displayName: 'AcceptanceTest_vRestNG'
   - job: PerformanceTest
+    dependsOn: AcceptanceTest
     pool:
       name: Default
     steps:
@@ -105,8 +106,33 @@ stages:
       displayName: 'PerformanceTest_Vegeta'
 - stage: Deploy_PDN
   condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/main'))
+  variables:
+    - group: back-var-pdn
   jobs:
+  - job: BuildJob
+    pool:
+      name: Default
+    steps:
+    - task: qetza.replacetokens.replacetokens-task.replacetokens@4
+      displayName: 'Replace tokens in app.js'
+      inputs:
+        rootDirectory: backend
+        targetFiles: app.js
+    - task: Docker@1
+      displayName: build
+      inputs:
+        command: build
+        dockerFile: backend/Dockerfile
+        imageName: 'registry.digitalocean.com/reto-devops/back-pdn:$(Build.BuildId)'
+    - task: Docker@1
+      displayName: push
+      inputs:
+        containerregistrytype: 'Container Registry'
+        dockerRegistryEndpoint: 'DigitalOcean-DockerRegistry'
+        command: push
+        imageName: 'registry.digitalocean.com/reto-devops/back-pdn:$(Build.BuildId)'
   - job: DeployJob
+    dependsOn: BuildJob
     pool:
       name: Default
     steps:
@@ -114,9 +140,7 @@ stages:
       displayName: 'Replace tokens in **/*.yaml'
       inputs:
         rootDirectory: backend
-        targetFiles: |
-          *.yaml
-          app.js
+        targetFiles: '*.yaml'
     - task: Kubernetes@1
       displayName: 'kubectl apply'
       inputs:
