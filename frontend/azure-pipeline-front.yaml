@@ -84,6 +84,7 @@ stages:
     - script: vrest-ng-cli run --projectdir=$(System.DefaultWorkingDirectory)/frontend/aceptanceTest  --logger=xunit
       displayName: 'AcceptanceTest_vRestNG'
   - job: PerformanceTest
+    dependsOn: AcceptanceTest
     pool:
       name: Default
     steps:
@@ -99,6 +100,7 @@ stages:
         node $(System.DefaultWorkingDirectory)/backend/performanceTest/validate_results.js $(percentage-success-req)
       displayName: 'PerformanceTest_Vegeta'
   - job: SecurityTest
+    dependsOn: PerformanceTest
     pool:
       name: Default
     steps:  
@@ -109,6 +111,7 @@ stages:
         url: '$(front-url)'
         port: '4200'
   - job: E2E
+    dependsOn: SecurityTest
     pool:
       name: Default
     steps:
