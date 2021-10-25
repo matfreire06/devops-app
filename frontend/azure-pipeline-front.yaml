@@ -112,7 +112,7 @@ stages:
       inputs:
         threshold: '120'
         scantype: 'targetedScan'
-        url: '$(front-url)'
+        url: '$(front-url-np)'
         port: '4200'
   - job: E2E
     dependsOn: SecurityTest
