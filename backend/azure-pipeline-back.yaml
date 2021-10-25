@@ -48,7 +48,9 @@ stages:
         command: build
         dockerFile: backend/Dockerfile
         imageName: 'registry.digitalocean.com/reto-devops/back:$(Build.BuildId)'
-    - script: echo Builded!
+    - script: dockle --exit-code 1 --exit-level fatal registry.digitalocean.com/reto-devops/back:$(Build.BuildId)
+      displayName: 
+      condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/main'))
     - task: Docker@1
       condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/main'))
       displayName: push
@@ -86,6 +88,7 @@ stages:
       displayName: 'Replace tokens'
       inputs:
         targetFiles: '$(System.DefaultWorkingDirectory)/backend/acceptanceTest/testcases/**'  
+    - script: sleep 30
     - script: vrest-ng-cli run --projectdir=$(System.DefaultWorkingDirectory)/backend/acceptanceTest --logger=xunit
       displayName: 'AcceptanceTest_vRestNG'
   - job: PerformanceTest
@@ -109,6 +112,13 @@ stages:
   variables:
     - group: back-var-pdn
   jobs:
+  - job: Approval
+    pool: server
+    steps:
+    - task: ManualValidation@0
+      displayName: 'Manual Validation'
+      inputs:
+        notifyUsers: 'matfreire06@gmail.com'
   - job: BuildJob
     pool:
       name: Default
@@ -124,6 +134,8 @@ stages:
         command: build
         dockerFile: backend/Dockerfile
         imageName: 'registry.digitalocean.com/reto-devops/back-pdn:$(Build.BuildId)'
+    - script: dockle --exit-code 1 --exit-level fatal registry.digitalocean.com/reto-devops/back-pdn:$(Build.BuildId)
+      displayName: DockleSecurityLintern
     - task: Docker@1
       displayName: push
       inputs:
@@ -158,7 +170,7 @@ stages:
     steps:
     - task: oneluckidevWebSmokeTest@1
       inputs:
-        url: '#{back-url}#'
+        url: '$(back-url)'
         expectedReturnCode: '200'
         retryAttemptCount: '3'
         strictSSL: true
