@@ -147,9 +147,18 @@ stages:
         kubernetesServiceEndpoint: 'DigitalOcean-k8s'
         command: apply
         arguments: '-f $(System.DefaultWorkingDirectory)/backend/deployment-back.yaml -n pdn'
+- stage: SmokeTest
+  condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/main'))
+  variables:
+    - group: back-var-pdn
+  jobs:
+  - job: BuildJob
+    pool:
+      name: Default
+    steps:
     - task: oneluckidevWebSmokeTest@1
       inputs:
-        url: 'http://167.99.20.132:3000/user'
+        url: '#{back-url}#'
         expectedReturnCode: '200'
         retryAttemptCount: '3'
         strictSSL: true
