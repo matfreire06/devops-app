@@ -136,6 +136,7 @@ stages:
       inputs:
         notifyUsers: 'matfreire06@gmail.com' 
   - job: BuildJob
+    dependsOn: Approval
     pool:
       name: Default
     steps:
