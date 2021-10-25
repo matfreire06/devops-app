@@ -16,7 +16,7 @@ stages:
     - task: Kubernetes@1
       displayName: 'kubectl create'
       inputs:
-        kubernetesServiceEndpoint: 'SADOKS'
+        kubernetesServiceEndpoint: 'DigitalOcean-k8s'
         command: create
         arguments: '-f $(System.DefaultWorkingDirectory)/infra/namespace-dev.yaml'
       continueOnError: true
