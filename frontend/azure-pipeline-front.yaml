@@ -49,6 +49,7 @@ stages:
         imageName: 'registry.digitalocean.com/reto-devops/front:$(Build.BuildId)'
     - script: dockle --exit-code 1 --exit-level fatal registry.digitalocean.com/reto-devops/front:$(Build.BuildId)
       displayName: DockleSecurityLintern
+      condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/main'))
     - task: Docker@1
       condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/main'))
       displayName: push
