@@ -161,6 +161,7 @@ stages:
         command: push
         imageName: 'registry.digitalocean.com/reto-devops/front-pdn:$(Build.BuildId)'      
   - job: DeployJob
+    dependsOn: BuildJob
     pool:
       name: Default
     steps:
