@@ -47,7 +47,8 @@ stages:
         command: build
         dockerFile: frontend/Dockerfile
         imageName: 'registry.digitalocean.com/reto-devops/front:$(Build.BuildId)'
-    - script: echo Builded!
+    - script: dockle --exit-code 1 --exit-level fatal registry.digitalocean.com/reto-devops/front:$(Build.BuildId)
+      displayName: DockleSecurityLintern
     - task: Docker@1
       condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/main'))
       displayName: push
@@ -85,6 +86,7 @@ stages:
       displayName: 'Replace tokens'
       inputs:
         targetFiles: '$(System.DefaultWorkingDirectory)/frontend/aceptanceTest/testcases/**'  
+    - script: sleep 30
     - script: vrest-ng-cli run --projectdir=$(System.DefaultWorkingDirectory)/frontend/aceptanceTest  --logger=xunit
       displayName: 'AcceptanceTest_vRestNG'
   - job: PerformanceTest
@@ -147,6 +149,8 @@ stages:
         command: build
         dockerFile: frontend/Dockerfile
         imageName: 'registry.digitalocean.com/reto-devops/front-pdn:$(Build.BuildId)'
+    - script: dockle --exit-code 1 --exit-level fatal registry.digitalocean.com/reto-devops/front-pdn:$(Build.BuildId)
+      displayName: DockleSecurityLintern
     - task: Docker@1
       displayName: push
       inputs:
@@ -180,7 +184,7 @@ stages:
     steps:
     - task: oneluckidevWebSmokeTest@1
       inputs:
-        url: '#{front-url}#'
+        url: '$(front-url)'
         expectedReturnCode: '200'
         retryAttemptCount: '3'
         strictSSL: true
